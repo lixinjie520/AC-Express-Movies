@@ -12,6 +12,7 @@ app.engine(".hbs", engine({ extname: ".hbs" }));
 app.set("view engine", ".hbs");
 app.set("views", "./views");
 
+// 載入靜態資料夾
 app.use(express.static("public"));
 
 app.get("/", (req, res) => {
@@ -19,10 +20,24 @@ app.get("/", (req, res) => {
 });
 
 app.get("/movies", (req, res) => {
-    res.render("index", { movies, BASE_IMG_URL });
+    // 加上trim()就不行!!!
+    const keyword = req.query.search;
+    //console.log(keyword);
+    const matchedMovies = keyword ?
+        movies.filter((mv) =>
+            Object.values(mv).some((property) => {
+                if (typeof property === "string") {
+                    return property.toLowerCase().includes(keyword.toLowerCase());
+                }
+                return false;
+            })
+        ) :
+        movies;
+    res.render("index", { movies: matchedMovies, BASE_IMG_URL, keyword });
 });
 
 app.get("/movie/:id", (req, res) => {
+    // 取得 id
     const id = req.params.id;
     const movie = movies.find((mv) => mv.id.toString() === id);
     res.render("detail", { movie, BASE_IMG_URL });
