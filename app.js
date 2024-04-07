@@ -3,7 +3,10 @@ const express = require("express");
 const { engine } = require("express-handlebars");
 const app = express();
 //console.log(`app的內容為:${app} `);
+// 將電影清單存入 movies 變數
+const movies = require("./public/jsons/movies.json").results;
 const port = 3000;
+const BASE_IMG_URL = "https://movie-list.alphacamp.io/posters/";
 // 載入模組（例如 Express、Handlebars)、設定路由
 app.engine(".hbs", engine({ extname: ".hbs" }));
 app.set("view engine", ".hbs");
@@ -16,7 +19,7 @@ app.get("/", (req, res) => {
 });
 
 app.get("/movies", (req, res) => {
-    res.render("index");
+    res.render("index", { movies, BASE_IMG_URL });
 });
 
 app.get("/movie/:id", (req, res) => {
